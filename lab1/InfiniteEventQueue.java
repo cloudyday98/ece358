@@ -3,12 +3,20 @@ package lab1;
 import java.util.LinkedList; 
 import java.util.Queue; 
 
-public class InfiniteEventQueue {
+public class InfiniteEventQueue extends EventQueue{
 	
-	private Queue<Event> event_queue;
+	private static Queue<Event> event_queue;
 	
 	InfiniteEventQueue() {
 		event_queue = new LinkedList<>();
+	}
+	
+	InfiniteEventQueue(InfiniteEventQueue queue){
+		event_queue =  new LinkedList<>(queue.GetEventQueue());
+	}
+	
+	public Queue<Event> GetEventQueue(){
+		return event_queue;
 	}
 	
 	public void AddToEventQueue(Event e) {
