@@ -1,21 +1,17 @@
 package lab1;
 
-import java.util.LinkedList; 
 import java.util.Queue;
 
 
 public class EventGenerator {
 	
-	public static EventQueue GenerateArrivalEvents(double lambda, 
-			int simulation_time, 
-			EventQueue.QueueType type,
-			int queue_size) {
+	public static EventQueue GenerateArrivalEvents(EventQueue event_queue, 
+			double lambda, int simulation_time) {
 		
         double current_time = 0.0;
         double arrival_time = 0.0;
         
-        EventQueue event_arrivals = new EventQueue();
-        event_arrivals.ConfigureQueue(type, queue_size);
+        EventQueue event_arrivals = new EventQueue(event_queue);
 
         while (current_time < simulation_time) {
         	
@@ -37,27 +33,25 @@ public class EventGenerator {
         double current_packet_length = 0.0;
         double departure_time = 0.0;
         
-        Queue<Event> new_event_queue =  event_queue.GetEventQueue();
+        EventQueue new_event_queue = new EventQueue(event_queue);
         
-        for (Event a : new_event_queue) {
+        for (Event e : new_event_queue.GetEventQueue()) {
         	
         	current_packet_length = 
         			RandomVariableGenerator.GenerateRandomVariable(average_packet_length);
         	
             service_time = current_packet_length/transmission_rate;
             
-            if (a.GetEventTime() <= service_time) 
+            if (e.GetEventTime() <= service_time) 
             	departure_time = service_time + service_time;
-            else departure_time = a.GetEventTime() + service_time;
+            else departure_time = e.GetEventTime() + service_time;
 
 
             service_time = departure_time;
 
-            new_event_queue.add(new Event(departure_time, Event.EventType.DEPARTURE));
+            new_event_queue.AddToEventQueue(new Event(departure_time, Event.EventType.DEPARTURE));
         
         }
-        
-        //merge_into_events_queue(departure_events)
 		
 		return new EventQueue(); 
 	}
@@ -77,7 +71,7 @@ public class EventGenerator {
 		double current_time = 0.0;
         
         
-        EventQueue observer_events = new EventQueue();
+        EventQueue observer_events = new EventQueue(event_queue);
 
         while (current_time < simulation_time) {
         	
