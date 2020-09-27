@@ -9,11 +9,11 @@ public class MM1QueueSimulator{
 	private static double RHO = 0.25;
 	private static double lambda;
 	
-	private static InfiniteEventQueue event_queue;
+	private static EventQueue event_queue;
 	
 	public static void main(String[] args) {
 		
-		event_queue = new InfiniteEventQueue();
+		event_queue = new EventQueue();
 		
 		RunSimulation();
 		
@@ -24,9 +24,10 @@ public class MM1QueueSimulator{
 			
 			lambda = RHO*C/L;
 			
-			event_queue = EventGenerator.GenerateArrivalEvents(lambda, T);
+			event_queue = EventGenerator.GenerateArrivalEvents(lambda, T, 
+					EventQueue.QueueType.MM1, Integer.MAX_VALUE);
 			
-			event_queue = EventGenerator.GenerateDepartureEvents(event_queue, L, C);
+			event_queue = EventGenerator.GenerateDepartureEventsForMM1(event_queue, L, C);
 			
 			event_queue = EventGenerator.GenerateObserverEvents(event_queue, lambda, T);
 			

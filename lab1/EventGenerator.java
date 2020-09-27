@@ -6,12 +6,16 @@ import java.util.Queue;
 
 public class EventGenerator {
 	
-	public static EventQueue GenerateArrivalEvents(double lambda, int simulation_time) {
+	public static EventQueue GenerateArrivalEvents(double lambda, 
+			int simulation_time, 
+			EventQueue.QueueType type,
+			int queue_size) {
 		
         double current_time = 0.0;
         double arrival_time = 0.0;
         
-        InfiniteEventQueue event_arrivals = new InfiniteEventQueue();
+        EventQueue event_arrivals = new EventQueue();
+        event_arrivals.ConfigureQueue(type, queue_size);
 
         while (current_time < simulation_time) {
         	
@@ -24,7 +28,7 @@ public class EventGenerator {
 		return event_arrivals;
 	}
 	
-	public static EventQueue GenerateDepartureEvents(InfiniteEventQueue event_queue, 
+	public static EventQueue GenerateDepartureEventsForMM1(EventQueue event_queue, 
 			int average_packet_length,
 			int transmission_rate) {
 		
@@ -41,7 +45,6 @@ public class EventGenerator {
         			RandomVariableGenerator.GenerateRandomVariable(average_packet_length);
         	
             service_time = current_packet_length/transmission_rate;
-
             
             if (a.GetEventTime() <= service_time) 
             	departure_time = service_time + service_time;
@@ -56,25 +59,25 @@ public class EventGenerator {
         
         //merge_into_events_queue(departure_events)
 		
-		return new InfiniteEventQueue(); 
+		return new EventQueue(); 
 	}
 	
-	public static EventQueue GenerateDepartureEvents(FiniteEventQueue event_queue, 
+	public static EventQueue GenerateDepartureEventsForMM1K(EventQueue event_queue, 
 			int packet_length,
 			int transmission_rate) {
 		
 		//TODO: generate the departure events for MM1K queue
 		
-		return new FiniteEventQueue(); 
+		return new EventQueue(); 
 	}
 	
 	public static EventQueue GenerateObserverEvents
-	(InfiniteEventQueue event_queue, double lambda, int simulation_time) {
+	(EventQueue event_queue, double lambda, int simulation_time) {
 		
 		double current_time = 0.0;
         
         
-        InfiniteEventQueue observer_events = new InfiniteEventQueue();
+        EventQueue observer_events = new EventQueue();
 
         while (current_time < simulation_time) {
         	
