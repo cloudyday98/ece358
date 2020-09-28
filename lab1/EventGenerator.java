@@ -1,26 +1,23 @@
 package lab1;
 
-import java.util.Queue;
-
 
 public class EventGenerator {
 	
 	public static EventQueue GenerateArrivalEvents(EventQueue event_queue, 
 			double lambda, int simulation_time) {
 		
-        double current_time = 0.0;
         double arrival_time = 0.0;
         
         EventQueue event_arrivals = new EventQueue(event_queue);
-
-        while (current_time < simulation_time) {
-        	
-            arrival_time = RandomVariableGenerator.GenerateRandomVariable(lambda);
-            current_time += arrival_time;
-            Event a = new Event(current_time, Event.EventType.ARRIVAL);
-            event_arrivals.AddToEventQueue(a);
-        }
         
+        while (arrival_time < simulation_time) {
+
+            arrival_time +=  RandomVariableGenerator.GenerateRandomVariable(lambda);   
+            Event a = new Event(arrival_time, Event.EventType.ARRIVAL);
+            event_arrivals.AddToEventQueue(a);
+            
+        }
+
 		return event_arrivals;
 	}
 	
@@ -30,30 +27,23 @@ public class EventGenerator {
 		
 		
         double service_time = 0.0;
-        double current_packet_length = 0.0;
         double departure_time = 0.0;
-        
+        double packet_length = 0.0;
         EventQueue new_event_queue = new EventQueue(event_queue);
         
-        for (Event e : new_event_queue.GetEventQueue()) {
+        for (Event e : event_queue.GetEventQueue()) {
         	
-        	current_packet_length = 
-        			RandomVariableGenerator.GenerateRandomVariable(average_packet_length);
-        	
-            service_time = current_packet_length/transmission_rate;
-            
-            if (e.GetEventTime() <= service_time) 
-            	departure_time = service_time + service_time;
+        	packet_length = 
+        			RandomVariableGenerator.GenerateRandomVariable(1/(double)average_packet_length);
+            service_time = packet_length/transmission_rate;
+            if (e.GetEventTime() <= departure_time) departure_time += service_time;
             else departure_time = e.GetEventTime() + service_time;
-
-
-            service_time = departure_time;
-
+            
             new_event_queue.AddToEventQueue(new Event(departure_time, Event.EventType.DEPARTURE));
         
         }
 		
-		return new EventQueue(); 
+		return new_event_queue; 
 	}
 	
 	public static EventQueue GenerateDepartureEventsForMM1K(EventQueue event_queue, 
@@ -69,17 +59,15 @@ public class EventGenerator {
 	(EventQueue event_queue, double lambda, int simulation_time) {
 		
 		double current_time = 0.0;
-        
-        
-        EventQueue observer_events = new EventQueue(event_queue);
+        EventQueue new_event_queue = new EventQueue(event_queue);
 
         while (current_time < simulation_time) {
         	
             current_time += RandomVariableGenerator.GenerateRandomVariable(lambda*5);
             Event a = new Event(current_time, Event.EventType.OBSERVER);
-            observer_events.AddToEventQueue(a);
+            new_event_queue.AddToEventQueue(a);
         }
         
-		return observer_events;
+		return new_event_queue;
 	}
 }

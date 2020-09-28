@@ -12,14 +12,107 @@ public class MM1QueueSimulator{
 	private static EventQueue event_queue;
 	
 	public static void main(String[] args) {
-		
-		//event_queue = new EventQueue();
-		System.out.println("hello, world");
-		//RunSimulation();
+
+		RunSimulation();
 		
 	}
+	
+	public static void RunSimulation() {
+		
+		event_queue = new EventQueue();
+		
+		// Testing on RHO is from 0.25 to 0.95
+		
+		while (RHO <= 0.95) {
+			
+			lambda = RHO*C/L;
+			
+			event_queue = EventGenerator.GenerateArrivalEvents(event_queue, lambda, T);
 
-	/* the main function below was for testing purpose */	
+			event_queue = EventGenerator.GenerateDepartureEventsForMM1(event_queue, L, C);
+			
+			event_queue = EventGenerator.GenerateObserverEvents(event_queue, lambda, T);
+			
+			ProcessEvents();
+			
+			RHO += 0.1; // increment rho
+		}
+		
+		// Testing on RHO equals to 1.2
+		
+		RHO = 1.2;
+		
+		lambda = RHO*C/L;
+		
+		event_queue = EventGenerator.GenerateArrivalEvents(event_queue, lambda, T);
+
+		event_queue = EventGenerator.GenerateDepartureEventsForMM1(event_queue, L, C);
+		
+		event_queue = EventGenerator.GenerateObserverEvents(event_queue, lambda, T);
+		
+		ProcessEvents();
+		
+	}
+	
+	public static void ProcessEvents() {
+		
+		Event current_event;
+		int queue_size = 0;
+		long queue_size_sum = 0;
+		double idle_start = 0.0;
+		double total_queue_idle_time = 0.0;
+		boolean queue_is_idling = false;
+		int observer_count = 0;
+		
+		while(event_queue.GetQueueSize() != 0) {
+			current_event = event_queue.RemoveEvent();
+			
+			switch (current_event.GetEventType()) {
+				
+				case ARRIVAL:
+					
+					queue_size += 1;
+					
+					if (queue_is_idling) {
+						queue_is_idling = false;
+						total_queue_idle_time += 
+								(current_event.GetEventTime() - idle_start);
+						idle_start = 0.0;
+					}
+					
+					break;
+					
+				case DEPARTURE:
+					
+					queue_size -= 1;
+					
+					if (queue_size == 0) {
+						if (!queue_is_idling) {
+							queue_is_idling = true;
+							idle_start = current_event.GetEventTime();
+						}
+					}
+					
+					break;
+					
+				case OBSERVER:
+					
+					observer_count += 1;
+					queue_size_sum += queue_size;
+					
+					break;
+			}
+		}
+		
+		double EN = (double)queue_size_sum/(double)observer_count;
+		System.out.println("Average Number of Packet: " + EN);
+		System.out.println("Percentage of Idle: " + total_queue_idle_time/(double)T);
+		
+	}
+	
+}
+
+/* the main function below was for testing purpose */	
 /*	public static void main(String[] args) {
 		
 		event_queue = new EventQueue();
@@ -77,20 +170,3 @@ public class MM1QueueSimulator{
 		
 	}
 */
-	
-	public static void RunSimulation() {
-		while (RHO <= 0.95) {
-			
-			lambda = RHO*C/L;
-			
-			event_queue = EventGenerator.GenerateArrivalEvents(event_queue, lambda, T);
-			
-			event_queue = EventGenerator.GenerateDepartureEventsForMM1(event_queue, L, C);
-			
-			event_queue = EventGenerator.GenerateObserverEvents(event_queue, lambda, T);
-			
-			RHO += 0.1; // increment rho
-		}
-	}
-	
-}

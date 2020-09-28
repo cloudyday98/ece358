@@ -27,7 +27,7 @@ public class EventQueue {
 		event_sort = Comparator.comparingDouble(Event::GetEventTime);
 		event_queue =  new PriorityQueue<>(event_sort);
 		queue_type = queue.GetQueueType();
-		capacity = queue.GetQueueSize();
+		capacity = queue.GetQueueCapacity();
 		
 		for (Event e : queue.GetEventQueue()) event_queue.add(e);
 
@@ -37,6 +37,7 @@ public class EventQueue {
 	public PriorityQueue<Event> GetEventQueue(){ return event_queue; }	
 	public QueueType GetQueueType() { return queue_type; }
 	public int GetQueueSize() { return event_queue.size(); }
+	public int GetQueueCapacity() {return capacity;}
 	
 	// Modifiers
 	public boolean AddToEventQueue(Event e) {
